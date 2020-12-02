@@ -201,7 +201,7 @@ const numbers = [
   1638,
 ];
 
-function sumTo2020(numbers) {
+function sum2To2020(numbers) {
   let num1;
   let num2;
   numbers.forEach((number1, index1) => {
@@ -215,4 +215,28 @@ function sumTo2020(numbers) {
   console.log(`${num1} * ${num2} = ${num1 * num2}`);
 }
 
-sumTo2020(numbers);
+function sum3To2020(numbers) {
+  let num1;
+  let num2;
+  let num3;
+  numbers.forEach((number1, index1) => {
+    numbers.forEach((number2, index2) => {
+      numbers.forEach((number3, index3) => {
+        if (
+          index1 !== index2 &&
+          index1 !== index3 &&
+          index2 !== index3 &&
+          number1 + number2 + number3 === 2020
+        ) {
+          num1 = number1;
+          num2 = number2;
+          num3 = number3;
+        }
+      });
+    });
+  });
+  console.log(`${num1} * ${num2} * ${num3} = ${num1 * num2 * num3}`);
+}
+
+sum2To2020(numbers);
+sum3To2020(numbers);
