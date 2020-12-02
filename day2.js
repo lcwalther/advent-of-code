@@ -1018,5 +1018,25 @@ function passwordChecker(passwords) {
   });
   console.log(numberOfValidPasswords);
 }
-
 passwordChecker(passwords);
+
+function passwordChecker2() {
+  let numberOfValidPasswords = 0;
+  passwords.forEach((password) => {
+    const split = password.split(' ');
+    const amount = split[0].split('-');
+    const min = amount[0];
+    const max = amount[1];
+    const letter = split[1][0];
+    const string = split[2];
+    if (string[min - 1] === letter && string[max - 1] !== letter) {
+      numberOfValidPasswords++;
+    }
+    if (string[min - 1] !== letter && string[max - 1] === letter) {
+      numberOfValidPasswords++;
+    }
+  });
+  console.log(numberOfValidPasswords);
+}
+
+passwordChecker2(passwords);
