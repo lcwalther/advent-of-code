@@ -1170,7 +1170,7 @@ pid:453480077 eyr:2025 hcl:#a97842`
 const requiredKeys = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
 
 function passportValidator(passportInput) {
-  const formattedPasswords = (passportInput) => {
+  const formattedPassports = (passportInput) => {
     const passports = passportInput.split(/\n{2,}/g)
     const passportsSplitByEmptyLine = passports.map((passport) =>
       passport.replace(/\n/g, ' ')
@@ -1184,6 +1184,7 @@ function passportValidator(passportInput) {
       return [...obj, { ...passwordObj }]
     }, [])
   }
+  const passports = formattedPassports(passportInput)
 
   const isPassportValid = (passport) => {
     const keysWithoutCid = Object.keys(passport).filter((key) => key !== 'cid')
@@ -1192,12 +1193,55 @@ function passportValidator(passportInput) {
     )
   }
 
-  const passwords = formattedPasswords(passportInput)
+  const isPassportValidWithStricterRules = (passport) => {
+    const { byr, iyr, eyr, hgt, hvl, ecl, pid } = passport
+    const keysWithoutCid = Object.keys(passport).filter((key) => key !== 'cid')
+    const hasAllRequiredKeys = requiredKeys.every((requiredKey) =>
+      keysWithoutCid.includes(requiredKey)
+    )
+    const isByrValid = byr.length === 4 && byr >= 1920 && byr <= 2002
+    const isIyrValid = iyr.length === 4 && iyr >= 2010 && iyr <= 2020
+    const isEyrValid = eyr.length === 4 && eyr >= 2020 && eyr <= 2030
+    const isHgtValid = (hgt) => {
+      const isNumberFollowedByCmOrIn = hgt.match(/\d+cm|\d+in/)
+      if (isNumberFollowedByCmOrIn) {
+        const [number, unit] = hgt.split(/([^\d]+)/)
+        if (unit === 'cm') {
+          return number >= 150 && number <= 193
+        }
+        if (unit === 'in') {
+          return number >= 59 && number <= 76
+        }
+      }
+      return false
+    }
+    const isHclValid = false
+    const isEclValid = false
+    const isPidValid = false
+
+    return (
+      hasAllRequiredKeys &&
+      isByrValid &&
+      isIyrValid &&
+      isEyrValid &&
+      isHgtValid &&
+      isHclValid &&
+      isEclValid &&
+      isPidValid
+    )
+  }
+
   let validPassports = 0
-  passwords.forEach((passport) =>
+  passports.forEach((passport) =>
     isPassportValid(passport) ? validPassports++ : null
   )
   console.log(validPassports)
+
+  let validPassportsWithStricterRules = 0
+  passports.forEach((passport) =>
+    isPassportValidWithStricterRules(passport) ? validPassports++ : null
+  )
+  console.log(validPassportsWithStricterRules)
 }
 
 passportValidator(passportInput)
