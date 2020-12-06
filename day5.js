@@ -948,20 +948,29 @@ const getNumber = (characters) => {
   }
 }
 
-function getHighestSeatId(boardingPassesInput) {
+function getSeatIds(boardingPassesInput) {
   const boardingPasses = boardingPassesInput.split(/\n/g)
   let seatIds = []
   boardingPasses.forEach((boardingPass) => {
-    const [row, column] = boardingPass.split(/(.{7})(.+)/).filter((el) => el)
+    const row = boardingPass.slice(0, 7)
+    const column = boardingPass.slice(7)
     const rowNumber = getNumber(row)
     const columnNumber = getNumber(column)
     const seatId = rowNumber * 8 + columnNumber
     seatIds.push(seatId)
   })
-  seatIds.sort((a, b) => b - a)
-  const highestSeatId = seatIds[0]
-  console.log(highestSeatId)
-  return highestSeatId
+  seatIds.sort((a, b) => a - b)
+  const highestSeatId = seatIds[seatIds.length - 1]
+  console.log('Highest seat ID: ', highestSeatId)
+
+  let ownSeatId
+  seatIds.forEach((id, index) => {
+    id === seatIds[index] &&
+      id + 1 !== seatIds[index + 1] &&
+      id + 2 === seatIds[index + 1] &&
+      (ownSeatId = id + 1)
+  })
+  console.log('Own seat ID: ', ownSeatId)
 }
 
-getHighestSeatId(boardingPassesInput)
+getSeatIds(boardingPassesInput)
