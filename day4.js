@@ -1194,41 +1194,45 @@ function passportValidator(passportInput) {
   }
 
   const isPassportValidWithStricterRules = (passport) => {
-    const { byr, iyr, eyr, hgt, hvl, ecl, pid } = passport
+    const { byr, iyr, eyr, hgt, hcl, ecl, pid } = passport
     const keysWithoutCid = Object.keys(passport).filter((key) => key !== 'cid')
     const hasAllRequiredKeys = requiredKeys.every((requiredKey) =>
       keysWithoutCid.includes(requiredKey)
     )
-    const isByrValid = byr.length === 4 && byr >= 1920 && byr <= 2002
-    const isIyrValid = iyr.length === 4 && iyr >= 2010 && iyr <= 2020
-    const isEyrValid = eyr.length === 4 && eyr >= 2020 && eyr <= 2030
-    const isHgtValid = (hgt) => {
-      const isNumberFollowedByCmOrIn = hgt.match(/\d+cm|\d+in/)
-      if (isNumberFollowedByCmOrIn) {
-        const [number, unit] = hgt.split(/([^\d]+)/)
-        if (unit === 'cm') {
-          return number >= 150 && number <= 193
-        }
-        if (unit === 'in') {
-          return number >= 59 && number <= 76
-        }
-      }
-      return false
-    }
-    const isHclValid = false
-    const isEclValid = false
-    const isPidValid = false
 
-    return (
-      hasAllRequiredKeys &&
-      isByrValid &&
-      isIyrValid &&
-      isEyrValid &&
-      isHgtValid &&
-      isHclValid &&
-      isEclValid &&
-      isPidValid
-    )
+    if (hasAllRequiredKeys) {
+      const isByrValid = byr.length === 4 && byr >= 1920 && byr <= 2002
+      const isIyrValid = iyr.length === 4 && iyr >= 2010 && iyr <= 2020
+      const isEyrValid = eyr.length === 4 && eyr >= 2020 && eyr <= 2030
+      const isHgtValid = () => {
+        const isNumberFollowedByCmOrIn = !!hgt.match(/\d+cm|\d+in/)
+        if (isNumberFollowedByCmOrIn) {
+          const [number, unit] = hgt.split(/([^\d]+)/)
+          if (unit === 'cm') {
+            return number >= 150 && number <= 193
+          }
+          if (unit === 'in') {
+            return number >= 59 && number <= 76
+          }
+        }
+        return false
+      }
+      const isHclValid = !!hcl.match(/^#[0-9a-f]{6,6}$/)
+      const isEclValid =
+        ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'].indexOf(ecl) > -1
+      const isPidValid = !!pid.match(/^\d{9,9}$/)
+
+      return (
+        isByrValid &&
+        isIyrValid &&
+        isEyrValid &&
+        isHgtValid() &&
+        isHclValid &&
+        isEclValid &&
+        isPidValid
+      )
+    }
+    return false
   }
 
   let validPassports = 0
@@ -1239,7 +1243,9 @@ function passportValidator(passportInput) {
 
   let validPassportsWithStricterRules = 0
   passports.forEach((passport) =>
-    isPassportValidWithStricterRules(passport) ? validPassports++ : null
+    isPassportValidWithStricterRules(passport)
+      ? validPassportsWithStricterRules++
+      : null
   )
   console.log(validPassportsWithStricterRules)
 }
