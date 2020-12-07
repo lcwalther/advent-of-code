@@ -2238,16 +2238,24 @@ function getQuestionCount(rawData) {
 getQuestionCount(rawData);
 
 function getQuestionCount2(rawData) {
-  const splitByLines = rawData.split(/\n\n/g);
-  const sum = splitByLines.reduce((sum, entry) => {
-    const removeBreaks = entry.replace(/\n/g, ' ');
+  const groupsSplitByLines = rawData.split(/\n\n/g);
+  const sum = groupsSplitByLines.reduce((sum, group) => {
+    const removeBreaks = group.replace(/\n/g, ' ');
     const answersByPerson = removeBreaks.split(' ');
-    console.log(answersByPerson);
     const numberOfPeople = answersByPerson.length;
-    // if (answersByPerson.every=> answer.includes(answersByPerson[0])) {}
-    // return sum + 2
+    const oneLineAnswers = answersByPerson.join('');
+    const countedAnswers = oneLineAnswers.split('').reduce((prev, curr) => {
+      return { ...prev, [curr]: (prev[curr] || 0) + 1 };
+    }, {});
+    let questionCountAllYes = 0;
+    for (let answer in countedAnswers) {
+      if (countedAnswers[answer] === numberOfPeople) {
+        questionCountAllYes++;
+      }
+    }
+    return sum + questionCountAllYes;
   }, 0);
   console.log(sum);
 }
 
-// getQuestionCount2(rawData);
+getQuestionCount2(rawData);
