@@ -593,63 +593,27 @@ bright purple bags contain 5 shiny red bags, 5 vibrant cyan bags, 4 plaid cyan b
 dim chartreuse bags contain 1 faded indigo bag.
 drab purple bags contain 4 muted cyan bags, 3 wavy lavender bags, 2 dotted blue bags.`;
 
-const rawRules2 = `light red bags contain 1 bright white bag, 2 muted yellow bags.
-dark orange bags contain 3 bright white bags, 4 muted yellow bags.
-bright white bags contain 1 shiny gold bag.
-muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
-shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
-dark olive bags contain 3 faded blue bags, 4 dotted black bags.
-vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
-faded blue bags contain no other bags.
-dotted black bags contain no other bags.`;
-
-function getNumberOfBagColorsThatCanContainAtLeastOneShinyGoldBag(rawRules) {
+function getNumberOfColorsContainingAtLeastOneShinyGoldBag(rawRules) {
   const rules = rawRules.split(/.\n/);
   const rulesWithoutEmptyBags = rules.filter(
     (rule) => !rule.includes('no other bags')
   );
-  const rulesWithoutShinyGoldInOutmostBag = rulesWithoutEmptyBags.filter(
-    (rule) => {
-      const [outerBag] = rule.split(' bags contain ');
-      return outerBag !== 'shiny gold';
-    }
-  );
-  const getContainingOuterBags = (innerBagsArray) => {
-    const outerBagsDirectlyContainingAnyInnerBag = [];
-    rulesWithoutShinyGoldInOutmostBag.map((anyBag) => {
-      const [outerBag, innerBags] = anyBag.split(' bags contain ');
-      innerBagsArray.map((outerBagContainingShinyGold) => {
-        innerBags.includes(outerBagContainingShinyGold)
-          ? outerBagsDirectlyContainingAnyInnerBag.push(outerBag)
-          : null;
-      });
-    });
-    return outerBagsDirectlyContainingAnyInnerBag;
-  };
-  const outerBagsDirectlyContainingShinyGold = [];
-  rulesWithoutShinyGoldInOutmostBag.map((bag) => {
-    const [outerBag, innerBags] = bag.split(' bags contain ');
-    innerBags.includes('shiny gold')
-      ? outerBagsDirectlyContainingShinyGold.push(outerBag)
-      : null;
+  const rulesWithoutOuterShinyGoldBag = rulesWithoutEmptyBags.filter((rule) => {
+    const [outerBag] = rule.split(' bags contain ');
+    return outerBag !== 'shiny gold';
   });
 
-  console.log(outerBagsDirectlyContainingShinyGold);
-
-  const wurst = getContainingOuterBags(outerBagsDirectlyContainingShinyGold);
-  console.log(wurst);
-
-  // const formattedDataset = splitNonEmptyRules.reduce((prev, curr) => {
-  //   const newCurr = curr
-  //     .split(' ')
-  //     .filter((curr) => curr !== 'contain' && curr !== 'bags');
-  // console.log(newCurr.length);
-  // const obj = {
-  //   'muted chartreuse': {'muted bronze', 'faded black', 'bright tan' }
-  // };
-  //   return [...prev, { newCurr }];
-  // }, []);
-  // console.log(formattedDataset);
+  const outerBagsPotentiallyContainingShinyGold = [];
+  const getOuterBags = (bagToCheck) =>
+    rulesWithoutOuterShinyGoldBag.map((bag) => {
+      const [outerBag, innerBags] = bag.split(' bags contain ');
+      if (innerBags.includes(bagToCheck)) {
+        outerBagsPotentiallyContainingShinyGold.push(outerBag);
+        getOuterBags(outerBag);
+      }
+    });
+  getOuterBags('shiny gold');
+  console.log([...new Set(outerBagsPotentiallyContainingShinyGold)].length);
 }
 
-getNumberOfBagColorsThatCanContainAtLeastOneShinyGoldBag(rawRules);
+getNumberOfColorsContainingAtLeastOneShinyGoldBag(rawRules);
