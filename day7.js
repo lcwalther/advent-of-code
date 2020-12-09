@@ -616,4 +616,43 @@ function getNumberOfColorsContainingAtLeastOneShinyGoldBag(rawRules) {
   console.log([...new Set(outerBagsPotentiallyContainingShinyGold)].length);
 }
 
-getNumberOfColorsContainingAtLeastOneShinyGoldBag(rawRules);
+// getNumberOfColorsContainingAtLeastOneShinyGoldBag(rawRules);
+
+const rawRules2 = `shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.`;
+
+function getNumberOfAllPossibleInnerBags(rawRules, bagString) {
+  const rules = rawRules.replace(' no ', ' 0 ').split(/.\n/);
+  console.log(rules);
+  console.log(rules);
+  const bagsRequiredInside = [];
+  const getInnerBags = (bagString) => {
+    return rules.map((bag) => {
+      const [outerBag, innerBags] = bag.split(' bags contain ');
+      console.log('outer', outerBag, 'inner', innerBags);
+      if (outerBag === bagString) {
+        const innerBagsSplit = innerBags.split(', ');
+        console.log('innerBagsSplit', innerBagsSplit);
+        innerBagsSplit.map((innerInnerBag) => {
+          const innerInnerBagSplit = innerInnerBag.split(' ');
+          const amount = innerInnerBagSplit[0];
+          const innerBagColor =
+            innerInnerBagSplit[1] + ' ' + innerInnerBagSplit[2];
+          const bagsToPush = amount + amount * getInnerBags(innerBagColor);
+          console.log(bagsToPush);
+          bagsRequiredInside.push(bagsToPush);
+        });
+      }
+    });
+  };
+  getInnerBags(bagString);
+  console.log(bagsRequiredInside);
+  // console.log([...new Set(outerBagsPotentiallyContainingShinyGold)].length);
+}
+
+getNumberOfAllPossibleInnerBags(rawRules2, 'shiny gold');
